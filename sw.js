@@ -1,12 +1,12 @@
 // TrackMaster service worker — makes the home-screen web app work fully
 // offline. HTML is fetched network-first (so updates arrive when online);
 // everything else is cache-first (hashed assets never change).
-const CACHE = "trackmaster-v1";
+const CACHE = "trackmaster-v2";
 
 self.addEventListener("install", e => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => c.addAll(["./", "./manifest.webmanifest", "./icon.png", "./icon-192.png", "./icon-512.png"]))
+      .then(c => c.addAll(["./", "./manifest.webmanifest", "./icon.png", "./icon-192.png", "./icon-512.png", "./privacy.html"]))
       .then(() => self.skipWaiting())
   );
 });
