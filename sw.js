@@ -1,7 +1,7 @@
 // TrackARC service worker â€” makes the home-screen web app work fully
 // offline. HTML is fetched network-first (so updates arrive when online);
 // everything else is cache-first (hashed assets never change).
-const CACHE = "trackarc-v12";
+const CACHE = "trackarc-v13";
 
 self.addEventListener("install", e => {
   e.waitUntil(
