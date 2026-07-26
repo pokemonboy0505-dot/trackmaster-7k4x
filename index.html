@@ -11,7 +11,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="TrackARC" />
     <title>TrackARC</title>
-    <script type="module" crossorigin src="./assets/index-B1Fk2HVt.js"></script>
+    <script>
+      // Apply the saved theme BEFORE anything renders. Without this, dark
+      // mode only turned on once a screen containing the theme toggle
+      // mounted — the boot screen, sign-in and onboarding all flashed (or
+      // stayed) white for dark-mode users.
+      (function () {
+        try {
+          var saved = localStorage.getItem("trackmaster_theme");
+          var dark = saved
+            ? saved === "dark"
+            : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) { /* storage blocked — default to light */ }
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-BhvFuTd9.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-C6ejwW50.css">
   </head>
   <body>
