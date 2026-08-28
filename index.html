@@ -26,7 +26,7 @@
         } catch (e) { /* storage blocked — default to light */ }
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-BRWEecSN.js"></script>
+    <script type="module" crossorigin src="./assets/index-CR3bTePZ.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DAKCg_-k.css">
   </head>
   <body>
@@ -34,8 +34,31 @@
     <script>
       // Offline support for the hosted web app only — never on file://
       // (desktop build) or inside Capacitor.
+      //
+      // UPDATE CHECKING (user 2026-08-27: "it looks different with
+      // different race equivs on my phone than on the computer"). An
+      // installed PWA can sit on a cached bundle indefinitely — it only
+      // refetches when the browser feels like it — so two devices end up
+      // running two different MODELS and showing two different numbers
+      // for the same run. Registering is not enough: ask for an update on
+      // every load and every time the app comes back to the foreground,
+      // and tell the app when a new worker has taken over so it can offer
+      // a reload instead of silently disagreeing with itself.
       if ("serviceWorker" in navigator && location.protocol === "https:") {
-        navigator.serviceWorker.register("./sw.js");
+        navigator.serviceWorker.register("./sw.js").then(reg => {
+          reg.update().catch(() => {});
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") reg.update().catch(() => {});
+          });
+        }).catch(() => {});
+        let reloading = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          // sw.js calls skipWaiting + clients.claim, so this fires as soon
+          // as a new build is live. First install has no old controller.
+          if (reloading) return;
+          reloading = true;
+          window.dispatchEvent(new CustomEvent("trackarc:update-ready"));
+        });
       }
     </script>
   </body>
