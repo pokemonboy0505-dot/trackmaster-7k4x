@@ -1,7 +1,7 @@
 // TrackARC service worker — makes the home-screen web app work fully
 // offline. HTML is fetched network-first (so updates arrive when online);
 // everything else is cache-first (hashed assets never change).
-const CACHE = "trackarc-v133";
+const CACHE = "trackarc-v134";
 
 self.addEventListener("install", e => {
   e.waitUntil(
@@ -26,8 +26,12 @@ self.addEventListener("fetch", e => {
     e.respondWith(
       fetch(req)
         .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put("./", copy));
+          // Only a good response may become the cached app shell — caching
+          // a host 404/500 page would brick every offline startup after.
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then(c => c.put("./", copy));
+          }
           return res;
         })
         .catch(() => caches.match("./"))
@@ -37,8 +41,10 @@ self.addEventListener("fetch", e => {
       caches.match(req).then(hit =>
         hit ||
         fetch(req).then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(req, copy));
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then(c => c.put(req, copy));
+          }
           return res;
         })
       )
