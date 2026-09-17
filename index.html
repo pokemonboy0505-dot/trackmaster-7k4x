@@ -26,8 +26,8 @@
         } catch (e) { /* storage blocked — default to light */ }
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-DaZBu2Sy.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BBY4YKqy.css">
+    <script type="module" crossorigin src="./assets/index-CLUoqpj_.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DMgJR8w3.css">
   </head>
   <body>
     <div id="root"></div>
@@ -44,7 +44,11 @@
       // every load and every time the app comes back to the foreground,
       // and tell the app when a new worker has taken over so it can offer
       // a reload instead of silently disagreeing with itself.
-      if ("serviceWorker" in navigator && location.protocol === "https:") {
+      // Capacitor serves from https://localhost, so the protocol check alone
+      // let the worker register inside the Android app too — every APK
+      // update then popped the "update available" prompt in the native app.
+      var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+      if ("serviceWorker" in navigator && location.protocol === "https:" && !isNative) {
         navigator.serviceWorker.register("./sw.js").then(reg => {
           reg.update().catch(() => {});
           document.addEventListener("visibilitychange", () => {
